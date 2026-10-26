@@ -1,5 +1,8 @@
 'use strict';
 
+// Permit connections through local Windows antivirus/proxy SSL inspection
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 const path = require('node:path');
 const os = require('node:os');
 const fs = require('node:fs');

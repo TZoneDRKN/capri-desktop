@@ -58,7 +58,7 @@ async function models(id, cfg) {
   // what's missing has a code, so her setup knows what to ask for (setup.js)
   if (!p.url) throw Object.assign(new Error('no address set for this server'), { code: 'nourl' });
   if (p.env && !p.key) throw Object.assign(new Error(`no API key (or ${p.env})`), { code: 'nokey' });
-  const res = await fetch(p.modelsUrl || `${p.url}/models`, { headers: headers(p.key), signal: AbortSignal.timeout(5000) });
+  const res = await fetch(p.modelsUrl || `${p.url}/models`, { headers: headers(p.key), signal: AbortSignal.timeout(15000) });
   if (!res.ok) throw await failure(res);
   const body = await res.json();
   const list = Array.isArray(body) ? body : body.data || body.models || [];
@@ -74,7 +74,7 @@ async function openaiChat(p, { model, messages }, onDelta, signal) {
   const res = await fetch(`${p.url}/chat/completions`, {
     method: 'POST',
     headers: headers(p.key),
-    body: JSON.stringify({ model, messages, stream: true }),
+    body: JSON.stringify({ model, messages, max_tokens: 600, stream: true }),
     signal,
   });
   if (!res.ok) throw await failure(res);
