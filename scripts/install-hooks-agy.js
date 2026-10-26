@@ -44,11 +44,11 @@ function hasNode() {
 function hookCommand(eventType) {
   const script = path.resolve(__dirname, '..', 'hooks', 'capri-agy-hook.js')
     .replace(`app.asar${path.sep}`, `app.asar.unpacked${path.sep}`);
-  if (!process.versions.electron) {
-    return `${quoteIfNeeded(process.execPath)} ${quoteIfNeeded(script)} ${eventType}`;
-  }
   if (hasNode()) {
     return `node ${quoteIfNeeded(script)} ${eventType}`;
+  }
+  if (!process.versions.electron) {
+    return `${quoteIfNeeded(process.execPath)} ${quoteIfNeeded(script)} ${eventType}`;
   }
   return `ELECTRON_RUN_AS_NODE=1 ${quoteIfNeeded(process.execPath)} ${quoteIfNeeded(script)} ${eventType}`;
 }
