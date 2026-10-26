@@ -141,6 +141,9 @@ async function launch({ kind, id } = {}) {
   return undefined;
 }
 
+// in the installed app it sits next to the app archive (asarUnpack), where PowerShell can read it
+const SCRIPT_MEDIA = path.join(__dirname, 'media.ps1').replace(`app.asar${path.sep}`, `app.asar.unpacked${path.sep}`);
+
 // The media keys, as if pressed on the keyboard: whatever plays music (Spotify, a browser…) reacts.
 // Play and pause are the same key; the volume moves a few steps at a time.
 const MEDIA = { pause: [179, 1], play: [179, 1], next: [176, 1], previous: [177, 1], volup: [175, 5], voldown: [174, 5], mute: [173, 1] };
@@ -148,8 +151,12 @@ const MEDIA = { pause: [179, 1], play: [179, 1], next: [176, 1], previous: [177,
 async function media(action) {
   if (!WIN || !MEDIA[action]) return false;
   const [key, times] = MEDIA[action];
-  return powershell(`$w = New-Object -ComObject WScript.Shell; 1..${times} | ForEach-Object { $w.SendKeys([string][char]${key}) }`)
-    .then(() => true, () => false);
+  return new Promise((resolve) => {
+    execFile('powershell.exe', [
+      '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
+      '-File', SCRIPT_MEDIA, String(key), String(times),
+    ], { windowsHide: true, timeout: 5000 }, (err) => resolve(!err));
+  });
 }
 
 // A Spotify search for it: in the app if it's installed, else on the web.

@@ -52,7 +52,8 @@
     ],
     "asarUnpack": [
       "hooks/**",
-      "src/main/windows.ps1"
+      "src/main/windows.ps1",
+      "src/main/media.ps1"
     ],
     "win": {
       "target": "nsis",
